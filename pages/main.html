@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- 引用一些js -->
+        <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
+        <link href="../static/css/leaflet.css"type="text/css" rel="stylesheet"/>
+        <script src="../static/js/leaflet.js"></script>
+        <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+        <script src="../static/js/leaflet.ajax.js"></script>
+        <script src="../static/js/jquery-1.12.0.min.js"></script>
+        <title>Leaflet地图调用</title>        
+    </head>
+    <body>
+        <iframe src="nav.html" style="display:block;width: 100%;height:70px;" frameborder="0" frameborder="no" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"></iframe>
+        <div id="mapCanvas">
+            <div id="map" style="width: 100%;height: 40vw;"></div>
+        </div>
+        
+        <script>
+            /**
+             * 智图地图内容
+             */
+            var normalm1 = L.tileLayer.chinaProvider('Geoq.Normal.Map', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm2 = L.tileLayer.chinaProvider('Geoq.Normal.Color', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm3 = L.tileLayer.chinaProvider('Geoq.Normal.PurplishBlue', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm4 = L.tileLayer.chinaProvider('Geoq.Normal.Gray', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm5 = L.tileLayer.chinaProvider('Geoq.Normal.Warm', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm6 = L.tileLayer.chinaProvider('Geoq.Normal.Cold', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            /**
+             * 天地图内容
+             */
+            var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+                    maxZoom: 18,
+                    minZoom: 5
+                }),
+                normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+                    maxZoom: 18,
+                    minZoom: 5
+                }),
+                imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+                    maxZoom: 18,
+                    minZoom: 5
+                }),
+                imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+                    maxZoom: 26,
+                    minZoom: 3
+                });
+        
+            var normal = L.layerGroup([normalm, normala]),
+                image = L.layerGroup([imgm, imga]);
+            /**
+             * 谷歌
+             */
+            var normalMap = L.tileLayer.chinaProvider('Google.Normal.Map', {
+                    maxZoom: 26,
+                    minZoom: 3
+                }),
+                satelliteMap = L.tileLayer.chinaProvider('Google.Satellite.Map', {
+                    maxZoom: 26,
+                    minZoom: 3
+                });
+            /**
+             * 高德地图
+             */
+            var Gaode = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
+                maxZoom: 26,
+                minZoom: 3
+            });
+            var Gaodimgem = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {
+                maxZoom: 26,
+                minZoom: 3
+            });
+            var Gaodimga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {
+                maxZoom: 26,
+                minZoom: 3
+            });
+            var Gaodimage = L.layerGroup([Gaodimgem, Gaodimga]);
+        
+        
+        
+            var baseLayers = {
+                "智图地图": normalm1,
+                "智图多彩": normalm2,
+                "智图午夜蓝": normalm3,
+                "智图灰色": normalm4,
+                "智图暖色": normalm5,
+                "智图冷色": normalm6,
+                "天地图街道": normal,
+                "天地图影像": image,
+                "谷歌地图": normalMap,
+                "谷歌影像": satelliteMap,
+                "高德地图": Gaode,
+                "高德影像": Gaodimage,
+        
+            }
+        
+            var map = L.map("map", {
+                center: [26.05, 119.19],
+                zoom: 13,
+                layers: [Gaode],
+                zoomControl: false
+            });
+        
+            L.control.layers(baseLayers, null).addTo(map);
+            L.control.zoom({
+                zoomInTitle: '放大',
+                zoomOutTitle: '缩小'
+            }).addTo(map);
+            L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
+            map.addLayer(Gaode);
+            var geojsonlayer = new L.GeoJSON.AJAX('fjnuTeachFacility.geojson', {
+				//针对每个要素，在加载时绑定一个弹出框
+				onEachFeature: function(feature, layer) {
+					layer.bindPopup(feature.properties.Name);				
+					
+				}
+			});
+            geojsonlayer.addTo(map);
+
+        </script>
+    </body>
+    <footer>
+        这是脚
+    </footer>
+</html>
