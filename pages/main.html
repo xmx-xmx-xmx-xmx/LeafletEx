@@ -5,10 +5,13 @@
         <!-- 引用一些js -->
         <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
         <link href="../static/css/leaflet.css"type="text/css" rel="stylesheet"/>
+        <link rel="stylesheet" type="text/css" href="../static/css/leaflet.draw.css" /> 
         <script src="../static/js/leaflet.js"></script>
         <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
         <script src="../static/js/leaflet.ajax.js"></script>
         <script src="../static/js/jquery-1.12.0.min.js"></script>
+        <script src="../static/js/leaflet.draw.js"></script>
+        <script src="../static/js/leaflet-heat.js"></script>
         <title>Leaflet地图调用</title>        
     </head>
     <body>
@@ -113,20 +116,35 @@
         
             }
         
+
             var map = L.map("map", {
                 center: [26.05, 119.19],
                 zoom: 13,
-                layers: [Gaode],
+                layers: [normal],
                 zoomControl: false
             });
-        
-            L.control.layers(baseLayers, null).addTo(map);
             L.control.zoom({
                 zoomInTitle: '放大',
                 zoomOutTitle: '缩小'
             }).addTo(map);
+            //定义田径场标记，并使用 marker-red图像作为标记图像
+            var sport1Marker = L.marker([ 26.034301, 119.205964], 
+            {icon:L.icon({ iconUrl:'../static/images/marker-red.png' })} ).bindPopup('东区田径场 ');
+            var sport2Marker = L.marker([ 26.032369, 119.200851], 
+            { icon:L.icon({ iconUrl:'../static/images/marker-red.png' }) } ).bindPopup('西区田径场 ');
+            var sport3Marker = L.marker([ 26.025511, 119.211070], 
+            { icon:L.icon({ iconUrl:'../static/images/marker-red.png' }) } ).bindPopup('南区田径场 '); //将上面三个田径场标记，组成图层组。
+            var sportlayerGroup = L.layerGroup([sport1Marker, sport2Marker, sport3Marker]);
+
+            var mylayers={
+                "田径场":sportlayerGroup
+            }
+            var mylayers2={
+                "田径场":sportlayerGroup
+            }
             L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
-            map.addLayer(Gaode);
+            L.marker([26.02, 119.20],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
+            map.addLayer(normal);
             var geojsonlayer = new L.GeoJSON.AJAX('fjnuTeachFacility.geojson', {
 				//针对每个要素，在加载时绑定一个弹出框
 				onEachFeature: function(feature, layer) {
@@ -134,11 +152,21 @@
 					
 				}
 			});
-            geojsonlayer.addTo(map);
+            var drawnItems = new L.FeatureGroup(); 
 
+            geojsonlayer.addTo(map);
+            drawnItems.addTo(map); 
+            L.control.layers(baseLayers, mylayers).addTo(map);
+            L.control.layers(null, {"画图":drawnItems}).addTo(map);
+            L.control.scale().addTo(map);
+            var drawControl = new L.Control.Draw({ edit: { featureGroup: drawnItems } }); //加载 draw软件
+            map.addControl(drawControl);
+            map.on('draw:created', function(event) { var layer = event.layer; drawnItems.addLayer(layer); });
+
+            var heatMap = new L.heatLayer([ [26.023303, 119.207165], [26.023168, 119.206648], ], { radius: 20, blur: 15, maxZoom: 17 }).addTo(map);
         </script>
     </body>
     <footer>
-        这是脚
+        <a href="trans.html">坐标转换脚本</a>
     </footer>
 </html>
