@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- 引用一些js -->
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+        <script src="../static/js/echarts.min.js"></script>
+        <link href="../static/css/main.css", rel="stylesheet"/> <!-- 指定属性 rel="stylesheet" -->
+        <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
+        
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+            <a class="navbar-brand" onclick="click0()">XMX地图导航站</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click1()">主要地图</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click2()">热力图、聚类图</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click3()">路径查询</a>
+                    </li>
+				<li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click5()">学校地图</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click4()">坐标转换工具</a>
+                </li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="搜索地点" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">GO</button>
+                </form>
+                </div>
+            </div>
+        </nav>
+
+		<div id="desdiv" style="width: 100%; height: 40vw;"><span>初始化</span></div>
+		<footer class="mt-auto text-white-50">
+			<p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>, by <a href="https://twitter.com/mdo" class="text-white">@mdo</a>.</p>
+		</footer>
+		</body>
+    <script>
+		function click0() {
+			alert("click0");
+			document.getElementById('desdiv').innerHTML = "<iframe src='introduce.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+		function click1() {
+			alert("click1");
+			document.getElementById('desdiv').innerHTML = "<iframe src='mainmap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+		function click2() {
+			alert("click2");
+		document.getElementById('desdiv').innerHTML = "<iframe src='heatMap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+		function click3() {
+			alert("click3");
+		document.getElementById('desdiv').innerHTML = "<iframe src='findroute.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+		function click4() {
+			alert("click4");
+		document.getElementById('desdiv').innerHTML = "<iframe src='trans.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+		function click5() {
+			alert("click5");
+		document.getElementById('desdiv').innerHTML = "<iframe src='schoolmap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+    </script>
+    <style>
+    </style>
+    <footer>
+    </footer>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../static/css/leaflet.css" />
+		<link rel="stylesheet" href="MarkerCluster.Default.css" />
+		<link rel="stylesheet" href="leaflet-geojson-selector.css" />
+
+		<script src="../static/js/leaflet.js"></script>
+		<script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+		<script src="../static/js/leaflet.ajax.js"></script>
+		<script src="leaflet-geojson-selector.js"></script>
+
+		<style>
+			html,
+			body,
+			#map {
+				height: 100%;
+			}
+			
+			body {
+				padding: 0;
+				margin: 0;
+			}
+			
+			.leaflet-bar.map-text a {
+				color: #79BD8F;
+				display: inline;
+			}
+			
+			#query {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				z-index: 1000;
+				background: white;
+				padding: 1em;
+			}
+			
+			#queryResult {
+				display: none;
+			}
+			
+			#closeQuery {
+				width: 22px;
+				background-image: url('../static/images/close2.png')
+			}
+		</style>
+		<title>leaflet 热力图</title>
+	</head>
+
+	<body>
+		<div id="map"></div>
+		<div id="query" class="leaflet-bar map-text">
+			<input id="keyWord" type="text">
+			<input id="querybutton" type="button" value="查询" onclick="queryTDT();" />
+			
+		</div>
+		<div id="queryResult" class="queryResult">
+			<input id="HidequeryResultButton" type="button" value="隐藏" onclick="queryTDT();" />
+			<pre id="selection">&nbsp;</pre></div>
+
+		<script type="text/javascript">
+			//设置天地图的电子地图数据的来源。
+			var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			//创建天地图电子地图的图层组，将电子地图与注记图层组合，形成电子地图图层组
+			var normal = L.layerGroup([normalm, normala]);
+			//创建天地图影像地图的图层组，将影像地图与注记图层组合，形成影像地图图层组
+			var image = L.layerGroup([imgm, imga]);
+			var baseLayers = {
+				"地图": normal,
+				"影像": image
+			}
+			var map = L.map('map', {
+				center: [26.0310, 119.2075],
+				zoom: 15,
+				layers: [normal]
+			});
+			
+			
+			var geojsonLayer;
+			var geoList;
+			var markers = new L.FeatureGroup();
+			map.addLayer(markers);
+			//L.control.layers(baseLayers).addTo(map);
+			//var xhr;
+
+			//天地图查询功能
+			function queryTDT() {
+
+				//调用搜索服务的url示例
+				//var url = "http://www.fjmap.net/fjmapsvc/api/POI/search/%E5%B9%BC%E5%84%BF%E5%9B%AD?pageIndex=1&pageSize=10&minX=118.5352024453&minY=24.791906785445&maxX=118.62850040368&maxY=24.845550965743&gbcode=350582";
+				
+				var keyword = document.getElementById('keyWord').value;
+				var url = processURL(keyword);
+				var scriptEl = document.createElement('script');
+				scriptEl.setAttribute('src',url);				
+				document.body.appendChild(scriptEl);
+
+			}
+			//处理回调的代码
+			queryJsonpCallback = function(data) {
+				// 处理由服务器返回的数据				
+				var results = data.result;
+				//结果数据是放在data.result里面的。而有另外的count属性代表查询结果数
+				
+				//用results来创建一个标准的geojson点数据。
+				var geojsonFormattedLocations = results.map(function(location) {
+					return {
+						"type": 'Feature',
+						"properties": {
+							"NAME": location.NAME,
+							"ADDRESS": location.ADDRESS
+						},
+						"geometry": {
+							"type": 'Point',
+							"coordinates": [location.LNG, location.LAT]
+						}
+
+					};
+				});
+				if (!(typeof geojsonLayer == "undefined")) {
+					map.removeLayer(geojsonLayer);
+				}
+				geojsonLayer = L.geoJson(geojsonFormattedLocations, {
+					onEachFeature: function(feature, layer) {
+						layer.bindPopup(feature.properties.NAME);
+
+					}
+				}).addTo(map);
+				
+				
+				if (!(typeof geoList == "undefined")) {
+					geoList.reload(geojsonLayer);
+				} else {
+					geoList = new L.Control.GeoJSONSelector(geojsonLayer, {
+						zoomToLayer: true,
+						//定义数据显示格式。
+						listItemBuild: function(layer) {
+							return L.Util.template('<small><b>{NAME}</b><br>地址: {ADDRESS} </small>', layer.feature.properties);
+						}
+					});
+					//处理geojson载入后的UI点击事件
+					geoList.on('change', function(e) {
+						
+						markers.clearLayers();
+						
+						var feature=e.layers[0].feature;
+						var lat=feature.geometry.coordinates[1];
+						var lng=feature.geometry.coordinates[0];
+						
+						var popupContent="<b>"+feature.properties.NAME+"</b>";
+						var popup = L.popup()
+						.setContent(popupContent);
+						var marker = L.marker([lat, lng], {
+							icon: L.icon({
+								iconUrl: 'img/location.png',
+								iconAnchor:[8,32]
+							})
+						}).addTo(map);
+						marker.bindPopup(popup).openPopup();
+						//将结果放到markers中，方便清除操作。
+						markers.addLayer(marker);						
+						
+					});
+
+					map.addControl(geoList);
+				}
+
+			}; 
+			//处理如何向天地图的查询服务，生成查询URL。
+			function processURL(Keyword) {
+				var url = "http://www.fjmap.net/fjmapsvc/api/POI/search/";
+				
+				var newurl = url + "{" + Keyword + "}";
+				//可以根据需要不断附加参数进去。
+				newurl = addURLParam(newurl, "gbcode", "350121");
+				newurl=addURLParam(newurl, "pageSize", "20");
+				newurl=addURLParam(newurl, "pageIndex", "1");
+				//添加回调函数的参数。
+				newurl=addURLParam(newurl,"callback","queryJsonpCallback");				
+				return newurl;
+			}
+			//处理使用get提交请求时，URL参数附加到URL的问题。
+			function addURLParam(url, name, value) {
+
+				url += (url.indexOf("?") == -1 ? "?" : "&");
+				url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+				return url;
+			}
+
+			function ClearQuery() {
+				if (geojsonLayer) {
+					map.removeLayer(geojsonLayer);
+				}
+				if (geoList) {
+					map.removeControl(geoList);
+				}
+			}
+
+			//
+		</script>
+	</body>
+</html>

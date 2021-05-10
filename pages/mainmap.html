@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <!-- 引用一些js -->
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.2.0.js"></script>
         <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
         <link href="../static/css/leaflet.css"type="text/css" rel="stylesheet"/>
         <link rel="stylesheet" type="text/css" href="../static/css/leaflet.draw.css" /> 
@@ -11,24 +12,21 @@
         <script src="../static/js/leaflet.ajax.js"></script>
         <script src="../static/js/jquery-1.12.0.min.js"></script>
         <script src="../static/js/leaflet.draw.js"></script>
-        <script src="../static/js/leaflet-heat.js"></script>
+
+        <!-- 标题 -->
         <title>Leaflet地图调用</title>        
     </head>
     <body>
-        <iframe src="nav.html" style="display:block;width: 100%;height:70px;" frameborder="0" frameborder="no" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"></iframe>
+        <!-- 引入写好的导航栏 -->
         <div id="mapCanvas">
             <div id="map" style="width: 100%;height: 40vw;"></div>
         </div>
-        
+        <!-- JavaScript -->
         <script>
             /**
              * 智图地图内容
              */
             var normalm1 = L.tileLayer.chinaProvider('Geoq.Normal.Map', {
-                maxZoom: 18,
-                minZoom: 5
-            });
-            var normalm2 = L.tileLayer.chinaProvider('Geoq.Normal.Color', {
                 maxZoom: 18,
                 minZoom: 5
             });
@@ -41,10 +39,6 @@
                 minZoom: 5
             });
             var normalm5 = L.tileLayer.chinaProvider('Geoq.Normal.Warm', {
-                maxZoom: 18,
-                minZoom: 5
-            });
-            var normalm6 = L.tileLayer.chinaProvider('Geoq.Normal.Cold', {
                 maxZoom: 18,
                 minZoom: 5
             });
@@ -97,16 +91,14 @@
                 minZoom: 3
             });
             var Gaodimage = L.layerGroup([Gaodimgem, Gaodimga]);
-        
-        
-        
+            /**
+             * 把图层们揉到一起
+             */        
             var baseLayers = {
                 "智图地图": normalm1,
-                "智图多彩": normalm2,
                 "智图午夜蓝": normalm3,
                 "智图灰色": normalm4,
                 "智图暖色": normalm5,
-                "智图冷色": normalm6,
                 "天地图街道": normal,
                 "天地图影像": image,
                 "谷歌地图": normalMap,
@@ -115,14 +107,18 @@
                 "高德影像": Gaodimage,
         
             }
-        
-
+            /**
+             * new一个map
+             */
             var map = L.map("map", {
                 center: [26.05, 119.19],
                 zoom: 13,
                 layers: [normal],
                 zoomControl: false
             });
+            /**
+             * 缩放按钮
+             */
             L.control.zoom({
                 zoomInTitle: '放大',
                 zoomOutTitle: '缩小'
@@ -135,13 +131,11 @@
             var sport3Marker = L.marker([ 26.025511, 119.211070], 
             { icon:L.icon({ iconUrl:'../static/images/marker-red.png' }) } ).bindPopup('南区田径场 '); //将上面三个田径场标记，组成图层组。
             var sportlayerGroup = L.layerGroup([sport1Marker, sport2Marker, sport3Marker]);
-
+            // 田径场
             var mylayers={
                 "田径场":sportlayerGroup
             }
-            var mylayers2={
-                "田径场":sportlayerGroup
-            }
+            // 添加2个标记
             L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
             L.marker([26.02, 119.20],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
             map.addLayer(normal);
@@ -162,8 +156,6 @@
             var drawControl = new L.Control.Draw({ edit: { featureGroup: drawnItems } }); //加载 draw软件
             map.addControl(drawControl);
             map.on('draw:created', function(event) { var layer = event.layer; drawnItems.addLayer(layer); });
-
-            var heatMap = new L.heatLayer([ [26.023303, 119.207165], [26.023168, 119.206648], ], { radius: 20, blur: 15, maxZoom: 17 }).addTo(map);
         </script>
     </body>
     <footer>

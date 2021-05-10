@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- 引用一些js -->
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.2.0.js"></script>
+        <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
+        <link href="../static/css/leaflet.css"type="text/css" rel="stylesheet"/>
+        <link rel="stylesheet" type="text/css" href="../static/css/leaflet.draw.css" /> 
+        <script src="../static/js/leaflet.js"></script>
+        <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+        <script src="../static/js/leaflet.ajax.js"></script>
+        <script src="../static/js/jquery-1.12.0.min.js"></script>
+        <script src="../static/js/leaflet.draw.js"></script>
+        <script src="../static/js/leaflet-heat.js"></script>
+        <script src="../static/js/stubuildpoint.js"></script>
+        <script src="../static/js/leaflet.markercluster.js"></script>
+        <script src="stubuildpoint.js"></script>
+        <!-- 标题 -->
+        <title>Leaflet热力图、聚类图</title>        
+    </head>
+    <body>
+        <div id="mapCanvas">
+            <div id="map" style="width: 100%;height: 40vw;"></div>
+        </div>
+		<script type="text/javascript">
+			//设置天地图的电子地图数据的来源。
+			var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			//创建天地图电子地图的图层组，将电子地图与注记图层组合，形成电子地图图层组
+			var normal = L.layerGroup([normalm, normala]);
+			//创建天地图影像地图的图层组，将影像地图与注记图层组合，形成影像地图图层组
+			var image = L.layerGroup([imgm, imga]);
+			var baseLayers = {
+				"地图": normal,
+				"影像": image
+			}
+			var map = L.map('map', {
+				center: [26.0310, 119.2075],
+				zoom: 15,
+				layers: [normal]
+			});
+			L.control.layers(baseLayers).addTo(map);
+			
+			//定义热力图图层
+			var heatMap = new L.heatLayer([], {
+				radius: 20,
+				blur: 15,
+				maxZoom: 17
+			}).addTo(map);
+			
+			//定义用于点显示的样式
+			var pointStyle = {
+				radius: 3,
+				fillColor: "#000000",
+				color: "#000000",
+				weight: 1,
+				fillOpacity: 1
+			};
+			//加载用于热力图显示的数据图层
+			var stubuildinglayer = new L.GeoJSON.AJAX('stubuild.geojson', {
+				onEachFeature: function(feature, layer) {
+								
+					layer.bindPopup(feature.properties.Name);
+					var tempPoint = [feature.geometry.coordinates[1],
+						feature.geometry.coordinates[0]						
+					];	
+					
+					//将每次载入的新数据，加到热力图中
+					heatMap.addLatLng(tempPoint);
+				},
+				//用于覆盖默认的样式，用自定义的样式来渲染点
+				pointToLayer: function(feature, latlng) {
+					return L.circleMarker(latlng, pointStyle);
+				}
+			}).addTo(map);
+			
+			//标记聚类
+			var markers = L.markerClusterGroup();
+			for (var i = 0; i < stubuildpoint.length; i++) {
+				var pointtemp = stubuildpoint[i];
+				var sname=pointtemp[2];
+				var marker = L.marker([pointtemp[0], pointtemp[1]]);
+				marker.bindPopup(sname);
+				markers.addLayer(marker);
+			}
+			map.addLayer(markers);
+		</script>
+	</body>
+    <footer>
+    </footer>
+</html>

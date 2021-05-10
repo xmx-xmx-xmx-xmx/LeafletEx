@@ -1,0 +1,113 @@
+<html>
+
+	<head>
+		<meta charset=utf-8 />
+		<title>Simple FeatureLayer</title>
+		<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+		<!-- 载入  Leaflet1.0.0-->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+		<script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+
+		<!-- 从ESRI载入esi-leaflet -->
+		<script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+		<script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+			}
+			
+			#map {
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				left: 0;
+			}
+			
+			#selectedFeatures {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				z-index: 1000;
+				background: white;
+				padding: 1em;
+			}
+			
+			.leaflet-bar.map-text a {
+				color: #79BD8F;
+				display: inline;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="mapCanvas">
+            <div id="map" style="width: 100%;height: 40vw;"></div>
+        </div>
+		<div id="selectedFeatures" class="leaflet-bar map-text">点击地图
+		</div>
+		<script>
+			//设置天地图的电子地图数据的来源。
+			var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			var imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			//创建天地图电子地图的图层组，将电子地图与注记图层组合，形成电子地图图层组
+			var normal = L.layerGroup([normalm, normala]);
+			var map = L.map('map', {
+				center: [26.0310, 119.2075],
+				zoom: 15,
+				layers: [normal]
+			});
+			
+			//加载ArcgisServer提供的动态地图服务
+			var fjnuLayer = L.esri.dynamicMapLayer({
+				// url: 'http://DESKTOP-CQJLBP8:6080/arcgis/rest/services/fjnu2/MapServer',								
+				url:'http://39.108.186.80:6080/arcgis/rest/services/fjnu/MapServer',
+				opacity: 0.5
+			}).addTo(map);
+			
+			var identifiedFeature;
+			var pane = document.getElementById('selectedFeatures');
+			
+			map.on('click', function(e) {
+				pane.innerHTML = '载入中';
+				if (identifiedFeature) {
+					map.removeLayer(identifiedFeature);
+				}
+				//处理identify功能
+				fjnuLayer.identify().on(map).at(e.latlng).run(function(error, featureCollection) {
+					//检测是否有返回要素。
+					if (featureCollection.features.length > 0) {
+						//将返回的要素集合中的第一个要素转为geojson数据，并加到地图中。
+						identifiedFeature = L.geoJson(featureCollection.features[0]).addTo(map);
+						
+						//提取要素中的属性信息。
+						var buildname = featureCollection.features[0].properties.Name;
+						var type = featureCollection.features[0].properties.Type;
+						pane.innerHTML = "名称: " + buildname + "<br/>" + "类型: " + type + "<br/>";
+					} else {
+						pane.innerHTML = '没找到地物';
+					}
+				});
+			});
+		</script>
+
+	</body>
+
+</html>
