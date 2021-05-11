@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset=utf-8 />
+		<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
 		<link rel="stylesheet" type="text/css" href="../static/css/leaflet.css" />
 		<link rel="stylesheet" href="MarkerCluster.Default.css" />
 		<link rel="stylesheet" href="leaflet-geojson-selector.css" />
@@ -168,7 +170,7 @@
 						.setContent(popupContent);
 						var marker = L.marker([lat, lng], {
 							icon: L.icon({
-								iconUrl: 'img/location.png',
+								iconUrl: '../static/images/markon-red.png',
 								iconAnchor:[8,32]
 							})
 						}).addTo(map);

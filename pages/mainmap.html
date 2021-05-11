@@ -2,16 +2,16 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
         <!-- 引用一些js -->
-        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.2.0.js"></script>
         <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
-        <link href="../static/css/leaflet.css"type="text/css" rel="stylesheet"/>
-        <link rel="stylesheet" type="text/css" href="../static/css/leaflet.draw.css" /> 
+        <link href="../static/css/leaflet.css" type="text/css" rel="stylesheet"/>
+        <link href="../static/css/leaflet.draw.css" type="text/css" rel="stylesheet"/> 
         <script src="../static/js/leaflet.js"></script>
-        <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
         <script src="../static/js/leaflet.ajax.js"></script>
-        <script src="../static/js/jquery-1.12.0.min.js"></script>
         <script src="../static/js/leaflet.draw.js"></script>
+        <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+        <script src="../static/js/jquery-1.12.0.min.js"></script>
 
         <!-- 标题 -->
         <title>Leaflet地图调用</title>        
@@ -23,9 +23,7 @@
         </div>
         <!-- JavaScript -->
         <script>
-            /**
-             * 智图地图内容
-             */
+            //智图地图内容
             var normalm1 = L.tileLayer.chinaProvider('Geoq.Normal.Map', {
                 maxZoom: 18,
                 minZoom: 5
@@ -42,9 +40,7 @@
                 maxZoom: 18,
                 minZoom: 5
             });
-            /**
-             * 天地图内容
-             */
+            //天地图内容
             var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
                     maxZoom: 18,
                     minZoom: 5
@@ -64,9 +60,7 @@
         
             var normal = L.layerGroup([normalm, normala]),
                 image = L.layerGroup([imgm, imga]);
-            /**
-             * 谷歌
-             */
+            //谷歌
             var normalMap = L.tileLayer.chinaProvider('Google.Normal.Map', {
                     maxZoom: 26,
                     minZoom: 3
@@ -75,9 +69,7 @@
                     maxZoom: 26,
                     minZoom: 3
                 });
-            /**
-             * 高德地图
-             */
+            //高德地图
             var Gaode = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
                 maxZoom: 26,
                 minZoom: 3
@@ -91,9 +83,7 @@
                 minZoom: 3
             });
             var Gaodimage = L.layerGroup([Gaodimgem, Gaodimga]);
-            /**
-             * 把图层们揉到一起
-             */        
+            //把图层们揉到一起    
             var baseLayers = {
                 "智图地图": normalm1,
                 "智图午夜蓝": normalm3,
@@ -105,25 +95,20 @@
                 "谷歌影像": satelliteMap,
                 "高德地图": Gaode,
                 "高德影像": Gaodimage,
-        
             }
-            /**
-             * new一个map
-             */
+            // 创建新的地图
             var map = L.map("map", {
                 center: [26.05, 119.19],
                 zoom: 13,
                 layers: [normal],
                 zoomControl: false
             });
-            /**
-             * 缩放按钮
-             */
+            // 缩放按钮
             L.control.zoom({
                 zoomInTitle: '放大',
                 zoomOutTitle: '缩小'
             }).addTo(map);
-            //定义田径场标记，并使用 marker-red图像作为标记图像
+            // 定义田径场标记，并使用 marker-red图像作为标记图像
             var sport1Marker = L.marker([ 26.034301, 119.205964], 
             {icon:L.icon({ iconUrl:'../static/images/marker-red.png' })} ).bindPopup('东区田径场 ');
             var sport2Marker = L.marker([ 26.032369, 119.200851], 
@@ -136,8 +121,8 @@
                 "田径场":sportlayerGroup
             }
             // 添加2个标记
-            L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
-            L.marker([26.02, 119.20],{clickable:true}).bindPopup('为啥我做不出来').addTo(map);
+            L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('图书馆').addTo(map);
+            L.marker([26.0422, 119.2028],{clickable:true}).bindPopup('日日饭店（不好吃）').addTo(map);
             map.addLayer(normal);
             var geojsonlayer = new L.GeoJSON.AJAX('fjnuTeachFacility.geojson', {
 				//针对每个要素，在加载时绑定一个弹出框

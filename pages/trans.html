@@ -1,8 +1,7 @@
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width,user-scalable=no">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <meta charset=utf-8 />
+    <meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
@@ -84,6 +83,30 @@
         var index2 = obj2.selectedIndex; // 选中索引
         var selectoutput = obj2.options[index2].value; // 选中值
 
+        if (selectinput == "1" && selectoutput == "1") {
+            var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09);
+            console.log("BD09坐标转BD09坐标，" + result[0] +  "  " + result[1])
+            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09)[0]
+            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09)[1]
+            document.getElementById("output1").value = outputlong
+            document.getElementById("output2").value = outputlat
+        }
+        if (selectinput == "1" && selectoutput == "2") {
+            var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02);
+            console.log("BD09坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
+            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02)[0]
+            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02)[1]
+            document.getElementById("output1").value = outputlong
+            document.getElementById("output2").value = outputlat
+        }
+        if (selectinput == "1" && selectoutput == "3") {
+            var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84);
+            console.log("BD09坐标转WGS84，" + result[0] +  "  " + result[1])
+            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84)[0]
+            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84)[1]
+            document.getElementById("output1").value = outputlong
+            document.getElementById("output2").value = outputlat
+        }
         if (selectinput == "2" && selectoutput == "1") {
             var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09);
             console.log("GCJ02坐标转BD09坐标，" + result[0] +  "  " + result[1])
