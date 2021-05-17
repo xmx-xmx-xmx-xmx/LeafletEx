@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<html>
+	<head>
+		<meta charset=utf-8 />
+		<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
+		<link rel="stylesheet" type="text/css" href="../static/css/leaflet.css" />
+		<link rel="stylesheet" href="MarkerCluster.Default.css" />
+		<link rel="stylesheet" href="leaflet-geojson-selector.css" />
+		<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+		<script src="../static/js/leaflet.js"></script>
+		<script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+		<script src="../static/js/leaflet.ajax.js"></script>
+		<script src="leaflet-geojson-selector.js"></script>
+
+		<style>
+			html,
+			body,
+			#map {
+				height: 100%;
+			}			
+			body {
+				padding: 0;
+				margin: 0;
+			}			
+			.leaflet-bar.map-text a {
+				color: #79BD8F;
+				display: inline;
+			}			
+			#query {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				z-index: 1000;
+				background: white;
+				padding: 1em;
+			}			
+			#queryResult {
+				display: none;
+			}
+		</style>
+		<title>高德地图周边查询</title>
+	</head>
+
+	<body>
+		<div id="map"></div>
+		<div id="query" class="leaflet-bar map-text">
+			<input type="radio" name="typeRadios" value="050000" onclick="handleTypeChange()">餐饮美食</input>
+
+			<input type="radio" name="typeRadios" value="100000" onclick="handleTypeChange()">宾馆酒店</input>
+			<br>
+			<input type="radio" name="typeRadios" value="060000" onclick="handleTypeChange()">购物服务</input>
+			<input type="radio" name="typeRadios" value="160000" onclick="handleTypeChange()">金融服务</input>
+
+		</div>
+		<div id="queryResult" class="queryResult">
+			
+		</div>
+
+		<script type="text/javascript">
+			//设置高德的电子地图数据的来源。
+			var gaodenormal = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			// 将高德图层加载到leaflet中。
+			var map = L.map('map', {
+				center: [26.0310, 119.2075],
+				zoom: 15,
+				layers: gaodenormal
+			});
+
+
+			var geojsonLayer;
+			var geoList;
+			//用于放置选中标记的图层
+			var markers = new L.FeatureGroup();
+			map.addLayer(markers);
+
+			//处理查询成功后回调的代码
+			queryCallback = function(data) {
+				// 处理由服务器返回的数据				
+				if (data.infocode != '10000') {
+					alert("查询有错误")
+					return
+				}
+				//结果数据是放在data.result里面的。而有另外的count属性代表查询结果数
+				var pois = data.pois;
+				//用pois来创建一个标准的geojson点数据。
+				var geojsonFormattedLocations = pois.map(function(poi) {
+					return {
+						"type": 'Feature',
+						"properties": {
+							"NAME": poi.name,
+							"ADDRESS": poi.address
+						},
+						"geometry": {
+							"type": 'Point',
+							"coordinates": [parseFloat(poi.location.split(",")[0]), parseFloat(poi.location.split(",")[1])]
+						}
+
+					};
+				});
+				if (!(typeof geojsonLayer == "undefined")) {
+					map.removeLayer(geojsonLayer);
+				}
+				geojsonLayer = L.geoJson(geojsonFormattedLocations, {
+					onEachFeature: function(feature, layer) {
+						layer.bindPopup(feature.properties.NAME);
+					}
+				}).addTo(map);
+
+				// 如果是第二次查询，只需要重新载入数据geojsonlayer
+				if (!(typeof geoList == "undefined")) {
+					geoList.reload(geojsonLayer);
+				} else {
+					// 第一次查询时
+					geoList = new L.Control.GeoJSONSelector(geojsonLayer, {
+						zoomToLayer: true,
+						//定义数据显示格式。
+						listItemBuild: function(layer) {
+							// 使用HTML内容来渲染数据
+							return L.Util.template('<small><b>{NAME}</b><br>地址: {ADDRESS} </small>', layer.feature.properties);
+						}
+					});
+					//处理geojson载入后的UI点击事件
+					geoList.on('change', function(e) {
+						// 先清除以前的结果。
+						markers.clearLayers();
+
+						var feature = e.layers[0].feature;
+						var lat = feature.geometry.coordinates[1];
+						var lng = feature.geometry.coordinates[0];
+						// 设置点击后显示的弹出框内容。
+						var popupContent = "<b>" + feature.properties.NAME + "</b>";
+						var popup = L.popup()
+							.setContent(popupContent);
+						var marker = L.marker([lat, lng], {
+							icon: L.icon({
+								iconUrl: 'img/location.png',
+								iconAnchor: [8, 32]
+							})
+						}).addTo(map);
+						marker.bindPopup(popup).openPopup();
+						//将结果放到markers中，方便清除操作。
+						markers.addLayer(marker);
+
+					});
+
+					map.addControl(geoList);
+				}
+
+			};
+
+
+			//处理如何进行高德地图的查询服务，生成查询URL。
+			function processURL(Type) {
+				// 高德地图的周边查询服务，
+				// 详细参数可参看：https://lbs.amap.com/api/webservice/guide/api/search
+				var url = "https://restapi.amap.com/v3/place/around";
+				var typeCode = Type;
+				// 先获得当前地图中心点
+				var mapCenter = map.getCenter();
+				// 获得中心点的坐标，并转化成字符串，为"经度,纬度"形式
+				var location = mapCenter.lng.toFixed(6).toString() + "," + mapCenter.lat.toFixed(6).toString()
+				//可以根据需要不断附加参数进去。
+				var newurl = addURLParam(url, "types", Type);
+				newurl = addURLParam(newurl, "location", location);
+				newurl = addURLParam(newurl, "radius", 3000);
+				newurl = addURLParam(newurl, "city", "fuzhou");
+				newurl = addURLParam(newurl, "output", "JSON");
+				newurl = addURLParam(newurl, "offset", "20");
+				newurl = addURLParam(newurl, "page", "1");
+
+				// 高德地图服务的key,需要自己再在高德地图上申请web服务获得。
+				newurl = addURLParam(newurl, "key", "027aa69e36665c99c6b188471dec3853");
+
+				return newurl;
+			}
+			//处理使用get提交请求时，URL参数附加到URL的问题。
+			function addURLParam(url, name, value) {
+
+				url += (url.indexOf("?") == -1 ? "?" : "&");
+				url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+				return url;
+			}
+
+			function handleTypeChange() {
+				// 处理类型选择变化过程。
+				// 先获得类型选择radio对象。
+				var radioObj = document.getElementsByName("typeRadios");
+				for (i = 0; i < radioObj.length; i++) {
+					if (radioObj[i].checked) {
+						// 得到选中的类型的值
+						var type = radioObj[i].value;
+						// 生成用于查询的URL信息。
+						var queryurl = processURL(type);
+						// 利用jquery的ajax来进行查询。
+						$.ajax({
+							url: queryurl,
+							async: true,
+							success: function(result) {
+								queryCallback(result)
+
+							}
+						});
+						break;
+					}
+				}
+			};
+
+			//
+		</script>
+	</body>
+</html>

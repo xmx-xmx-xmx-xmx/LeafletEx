@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <html>
     <head>
         <meta charset=utf-8 />
@@ -27,7 +28,10 @@
                     <a class="nav-link active" aria-current="page" onclick="click2()">热力图、聚类图</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" onclick="click3()">路径查询</a>
+                    <a class="nav-link active" aria-current="page" onclick="click3()">周边设施查询</a>
+                    </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click6()">地点查询</a>
                     </li>
 				<li class="nav-item">
                     <a class="nav-link active" aria-current="page" onclick="click5()">学校地图</a>
@@ -61,7 +65,7 @@
 		}
 		function click3() {
 			alert("click3");
-		document.getElementById('desdiv').innerHTML = "<iframe src='findroute.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		document.getElementById('desdiv').innerHTML = "<iframe src='perimeter.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
 		function click4() {
 			alert("click4");
@@ -71,8 +75,16 @@
 			alert("click5");
 		document.getElementById('desdiv').innerHTML = "<iframe src='schoolmap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
+        function click6() {
+			alert("click6");
+		document.getElementById('desdiv').innerHTML = "<iframe src='findloca.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
     </script>
     <style>
+		body {
+				margin: 0;
+				padding: 0;
+			}
     </style>
     <footer>
     </footer>

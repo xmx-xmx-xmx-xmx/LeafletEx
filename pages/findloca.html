@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<html>
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="../static/css/leaflet.css" />
+		<link rel="stylesheet" href="leaflet-geojson-selector.css" />
+		<!-- 调用jquery -->
+		<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+		<script src="../static/js/leaflet.js"></script>
+		<script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+		<script src="../static/js/leaflet.ajax.js"></script>
+		<!-- 用于列出查询结果的插件 -->
+		<script src="leaflet-geojson-selector.js"></script>
+
+		<style>
+			html,
+			body,
+			#map {
+				height: 100%;
+			}
+			
+			body {
+				padding: 0;
+				margin: 0;
+			}
+			
+			.leaflet-bar.map-text a {
+				color: #79BD8F;
+				display: inline;
+			}
+			
+			#query {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				z-index: 1000;
+				background: white;
+				padding: 1em;
+			}
+			
+			#queryResult {
+				display: none;
+			}			
+			
+		</style>
+		<title>高德地图搜索功能调用</title>
+	</head>
+
+	<body>
+		<div id="map"></div>
+		<div id="query" class="leaflet-bar map-text">
+			<input id="keyWord" type="text">
+			<input id="querybutton" type="button" value="查询" onclick="queryGD();" />
+		</div>
+
+		<script type="text/javascript">
+			//设置高德的电子地图数据的来源。
+			var gaodenormal = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
+				maxZoom: 18,
+				minZoom: 5
+			});
+			// 将高德图层加载到leaflet中。
+			var map = L.map('map', {
+				center: [26.0310, 119.2075],
+				zoom: 15,
+				layers: gaodenormal
+			});
+
+			var geojsonLayer;
+			var geoList;
+			// 用于存放查询结果的图层变量。
+			var markers = new L.FeatureGroup();
+			map.addLayer(markers);
+
+			function queryGD() {
+				// 向高德地图进行关键字查询功能
+				var keyword = document.getElementById('keyWord').value;
+				// 查询的链接URL信息范例：
+				// queryurl ='https://restapi.amap.com/v3/place/text?keywords=福建师范大学&city=fuzhou&output=json&offset=20&page=1&key=027aa69e36665c99c6b188471dec3853&extensions=all'
+				// 将查询关键字加上其它参数，生成查询URL
+				var queryurl = processURL(keyword);
+				// 利用jquery的ajax来进行查询。
+				$.ajax({
+					url: queryurl,
+					async: true,
+					success: function(result) {
+						queryCallback(result)
+
+					}
+				});
+			}
+			//处理查询成功后回调的代码
+			queryCallback = function(data) {
+				// 处理由服务器返回的数据				
+				if (data.infocode != '10000') {
+					alert("查询有错误")
+					return
+				}
+				//结果数据是放在data.result里面的。而有另外的count属性代表查询结果数
+				var pois = data.pois;
+				//用pois来创建一个标准的geojson点数据。
+				var geojsonFormattedLocations = pois.map(function(poi) {
+					return {
+						"type": 'Feature',
+						"properties": {
+							"NAME": poi.name,
+							"ADDRESS": poi.address
+						},
+						"geometry": {
+							"type": 'Point',
+							"coordinates": [parseFloat(poi.location.split(",")[0]), parseFloat(poi.location.split(",")[1])]
+						}
+
+					};
+				});
+				if (!(typeof geojsonLayer == "undefined")) {
+					map.removeLayer(geojsonLayer);
+				}
+				geojsonLayer = L.geoJson(geojsonFormattedLocations, {
+					onEachFeature: function(feature, layer) {
+						layer.bindPopup(feature.properties.NAME);
+					}
+				}).addTo(map);
+
+				// 如果是第二次查询，只需要重新载入数据geojsonlayer
+				if (!(typeof geoList == "undefined")) {
+					geoList.reload(geojsonLayer);
+				} else {
+					// 第一次查询时
+					geoList = new L.Control.GeoJSONSelector(geojsonLayer, {
+						zoomToLayer: true,
+						//定义数据显示格式。
+						listItemBuild: function(layer) {
+							// 使用HTML内容来渲染数据
+							return L.Util.template('<small><b>{NAME}</b><br>地址: {ADDRESS} </small>', layer.feature.properties);
+						}
+					});
+					//处理geojson载入后的UI点击事件
+					geoList.on('change', function(e) {
+						// 先清除以前的结果。
+						markers.clearLayers();
+
+						var feature = e.layers[0].feature;
+						var lat = feature.geometry.coordinates[1];
+						var lng = feature.geometry.coordinates[0];
+						// 设置点击后显示的弹出框内容。
+						var popupContent = "<b>" + feature.properties.NAME + "</b>";
+						var popup = L.popup()
+							.setContent(popupContent);
+						var marker = L.marker([lat, lng], {
+							icon: L.icon({
+								iconUrl: 'img/location.png',
+								iconAnchor: [8, 32]
+							})
+						}).addTo(map);
+						marker.bindPopup(popup).openPopup();
+						//将结果放到markers中，方便清除操作。
+						markers.addLayer(marker);
+
+					});
+
+					map.addControl(geoList);
+				}
+
+			};
+			//处理如何进行高德地图的查询服务，生成查询URL。
+			function processURL(Keyword) {
+				// 高德地图的地图查询服务，
+				// 详细参数可参看：https://lbs.amap.com/api/webservice/guide/api/search
+				var url = "https://restapi.amap.com/v3/place/text?";
+
+				//可以根据需要不断附加参数进去。
+				var newurl = addURLParam(url, "keywords", Keyword);
+				newurl = addURLParam(newurl, "city", "fuzhou");
+				newurl = addURLParam(newurl, "output", "json");
+				newurl = addURLParam(newurl, "offset", "20");
+				newurl = addURLParam(newurl, "page", "1");
+				// 高德地图服务的key,需要自己再在高德地图上申请web服务获得。
+				newurl = addURLParam(newurl, "key", "027aa69e36665c99c6b188471dec3853");
+				newurl = addURLParam(newurl, "extensions", "all");
+				return newurl;
+			}
+			//处理使用get提交请求时，URL参数附加到URL的问题。
+			function addURLParam(url, name, value) {
+
+				url += (url.indexOf("?") == -1 ? "?" : "&");
+				url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
+				return url;
+			}
+
+			function ClearQuery() {
+				if (geojsonLayer) {
+					map.removeLayer(geojsonLayer);
+				}
+				if (geoList) {
+					map.removeControl(geoList);
+				}
+			}
+		</script>
+	</body>
+
+</html>
