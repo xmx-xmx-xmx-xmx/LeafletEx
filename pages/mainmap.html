@@ -24,128 +24,70 @@
         </div>
         <!-- JavaScript -->
         <script>
-            //智图地图内容
-            var normalm1 = L.tileLayer.chinaProvider('Geoq.Normal.Map', {
-                maxZoom: 18,
-                minZoom: 5
-            });
-            var normalm3 = L.tileLayer.chinaProvider('Geoq.Normal.PurplishBlue', {
-                maxZoom: 18,
-                minZoom: 5
-            });
-            var normalm4 = L.tileLayer.chinaProvider('Geoq.Normal.Gray', {
-                maxZoom: 18,
-                minZoom: 5
-            });
-            var normalm5 = L.tileLayer.chinaProvider('Geoq.Normal.Warm', {
-                maxZoom: 18,
-                minZoom: 5
-            });
-            //天地图内容
-            var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
-                    maxZoom: 18,
-                    minZoom: 5
-                }),
-                normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
-                    maxZoom: 18,
-                    minZoom: 5
-                }),
-                imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
-                    maxZoom: 18,
-                    minZoom: 5
-                }),
-                imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
-                    maxZoom: 26,
-                    minZoom: 3
-                });
-        
-            var normal = L.layerGroup([normalm, normala]),
-                image = L.layerGroup([imgm, imga]);
-            //谷歌
-            var normalMap = L.tileLayer.chinaProvider('Google.Normal.Map', {
-                    maxZoom: 26,
-                    minZoom: 3
-                }),
-                satelliteMap = L.tileLayer.chinaProvider('Google.Satellite.Map', {
-                    maxZoom: 26,
-                    minZoom: 3
-                });
-            //高德地图
-            var Gaode = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
-                maxZoom: 26,
-                minZoom: 3
-            });
-            var Gaodimgem = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {
-                maxZoom: 26,
-                minZoom: 3
-            });
-            var Gaodimga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {
-                maxZoom: 26,
-                minZoom: 3
-            });
-            var Gaodimage = L.layerGroup([Gaodimgem, Gaodimga]);
-            //把图层们揉到一起    
-            var baseLayers = {
-                "智图地图": normalm1,
-                "智图午夜蓝": normalm3,
-                "智图灰色": normalm4,
-                "智图暖色": normalm5,
-                "天地图街道": normal,
-                "天地图影像": image,
-                "谷歌地图": normalMap,
-                "谷歌影像": satelliteMap,
-                "高德地图": Gaode,
-                "高德影像": Gaodimage,
-            }
-            // 创建新的地图
-            var map = L.map("map", {
-                center: [26.05, 119.19],
-                zoom: 13,
-                layers: [normal],
-                zoomControl: false
-            });
+var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+        maxZoom: 18,
+        minZoom: 5
+    }),
+        normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+            maxZoom: 18,
+            minZoom: 5
+        }),
+        imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+            maxZoom: 18,
+            minZoom: 5
+        }),
+        imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+            maxZoom: 18,
+            minZoom: 5
+        });
+
+    var normal = L.layerGroup([normalm, normala]),
+        image = L.layerGroup([imgm, imga]);
+
+    var baseLayers = {
+        "地图": normal,
+        "影像": image,
+    }
+
+    var map = L.map("map", {
+        center: [26.0310, 119.2075],
+        zoom: 15,
+        layers: [normal],
+        zoomControl: false
+    });
+
+    L.control.zoom({
+        zoomInTitle: '放大',
+        zoomOutTitle: '缩小'
+    }).addTo(map);
             // 缩放按钮
-            L.control.zoom({
-                zoomInTitle: '放大',
-                zoomOutTitle: '缩小'
-            }).addTo(map);
-            // 定义田径场标记，并使用 marker-red图像作为标记图像
-            var sport1Marker = L.marker([ 26.034301, 119.205964], 
-            {icon:L.icon({ iconUrl:'../static/images/marker-red.png' })} ).bindPopup('东区田径场 ');
-            var sport2Marker = L.marker([ 26.032369, 119.200851], 
-            { icon:L.icon({ iconUrl:'../static/images/marker-red.png' }) } ).bindPopup('西区田径场 ');
-            var sport3Marker = L.marker([ 26.025511, 119.211070], 
-            { icon:L.icon({ iconUrl:'../static/images/marker-red.png' }) } ).bindPopup('南区田径场 '); //将上面三个田径场标记，组成图层组。
-            var sportlayerGroup = L.layerGroup([sport1Marker, sport2Marker, sport3Marker]);
-            // 田径场
-            var mylayers={
-                "田径场":sportlayerGroup
-            }
             // 添加2个标记
-            L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('图书馆').addTo(map);
-            L.marker([26.0422, 119.2028],{clickable:true}).bindPopup('日日饭店（不好吃）').addTo(map);
+            L.marker([26.030955, 119.206318],{clickable:true}).bindPopup('<div class="p1" style="padding-top: 5px;"><a>'+'读书人，读书魂！'+'</a>').addTo(map);
+            L.marker([26.0422, 119.2028],{clickable:true}).bindPopup('<div class="p1" style="padding-top: 5px;"><a>'+'不好吃的日日饭店'+'</a>').addTo(map);
             map.addLayer(normal);
-            var geojsonlayer = new L.GeoJSON.AJAX('fjnuTeachFacility.geojson', {
-				//针对每个要素，在加载时绑定一个弹出框
-				onEachFeature: function(feature, layer) {
-					layer.bindPopup(feature.properties.Name);				
-					
+            			// 建立一个 FeatureGroup用来储存编辑的图层,并将图层加载到地图上。
+			var drawnItems = new L.FeatureGroup();
+			drawnItems.addTo(map);
+			//加载图层控制器控件，将画图图层也加入。
+			L.control.layers(baseLayers, {
+				"画图": drawnItems
+			}).addTo(map);
+			//对draw控件进行初始化，并将featureGroup作为参数，用于保存编辑结果。 
+			var drawControl = new L.Control.Draw({
+				edit: {
+					featureGroup: drawnItems
 				}
 			});
-            var drawnItems = new L.FeatureGroup(); 
-
-            geojsonlayer.addTo(map);
-            drawnItems.addTo(map); 
-            L.control.layers(baseLayers, mylayers).addTo(map);
-            L.control.layers(null, {"画图":drawnItems}).addTo(map);
-            L.control.scale().addTo(map);
-            var drawControl = new L.Control.Draw({ edit: { featureGroup: drawnItems } }); //加载 draw软件
-            map.addControl(drawControl);
-            map.on('draw:created', function(event) { var layer = event.layer; drawnItems.addLayer(layer); });
+			//加载draw软件
+			map.addControl(drawControl);
+			//处理每次画完以后，将画结果保存到drawnItems.
+			map.on('draw:created', function(event) {
+				var layer = event.layer;
+				drawnItems.addLayer(layer);
+			});
         </script>
     </body>
     <footer>
-        <a href="trans.html">坐标转换脚本</a>
     </footer>
     <style>
 		body {

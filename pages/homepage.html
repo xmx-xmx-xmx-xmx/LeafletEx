@@ -10,7 +10,7 @@
         <script src="../static/js/echarts.min.js"></script>
         <link href="../static/css/main.css", rel="stylesheet"/> <!-- 指定属性 rel="stylesheet" -->
         <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
-        
+        <title>小明星地图导航站</title>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -22,10 +22,11 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" onclick="click1()">主要地图</a>
+                    <a class="nav-link active" aria-current="page" onclick="click1()">天地图</a>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" onclick="click2()">热力图、聚类图</a>
+                    <a class="nav-link active" aria-current="page" onclick="click2()">热力图</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" onclick="click3()">周边设施查询</a>
@@ -34,16 +35,12 @@
                     <a class="nav-link active" aria-current="page" onclick="click6()">地点查询</a>
                     </li>
 				<li class="nav-item">
-                    <a class="nav-link active" aria-current="page" onclick="click5()">学校地图</a>
+                    <a class="nav-link active" aria-current="page" onclick="click5()">加载学校地图</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" onclick="click4()">坐标转换工具</a>
                 </li>
                 </ul>
-                <!-- <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="搜索地点" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">GO</button>
-                </form> -->
                 </div>
             </div>
         </nav>
@@ -52,31 +49,31 @@
 		</body>
     <script>
 		function click0() {
-			alert("click0");
+			// alert("click0");
 			document.getElementById('desdiv').innerHTML = "<iframe src='introduce.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
 		function click1() {
-			alert("click1");
+			// alert("click1");
 			document.getElementById('desdiv').innerHTML = "<iframe src='mainmap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
 		function click2() {
-			alert("click2");
+			// alert("click2");
 		document.getElementById('desdiv').innerHTML = "<iframe src='heatMap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
 		function click3() {
-			alert("click3");
+			// alert("click3");
 		document.getElementById('desdiv').innerHTML = "<iframe src='perimeter.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
 		function click4() {
-			alert("click4");
+			// alert("click4");
 		document.getElementById('desdiv').innerHTML = "<iframe src='trans.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
 		function click5() {
-			alert("click5");
+			// alert("click5");
 		document.getElementById('desdiv').innerHTML = "<iframe src='schoolmap.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
         function click6() {
-			alert("click6");
+			// alert("click6");
 		document.getElementById('desdiv').innerHTML = "<iframe src='findloca.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
     </script>

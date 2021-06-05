@@ -1,112 +1,257 @@
+<!DOCTYPE html>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <html>
-	<head>
-		<meta charset=utf-8 />
-		<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <head>
+        <meta charset="utf-8">
+        <meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <!-- 引用一些js -->
+        <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
+        <link href="../static/css/leaflet.css" type="text/css" rel="stylesheet"/>
+        <link href="../static/css/leaflet.draw.css" type="text/css" rel="stylesheet"/> 
+        <script src="../static/js/leaflet.js"></script>
+        <script src="../static/js/leaflet.ajax.js"></script>
+        <script src="../static/js/leaflet.draw.js"></script>
+        <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+        <script src="../static/js/jquery-1.12.0.min.js"></script>
 
-		<!-- 载入  Leaflet1.0.0-->
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
-		<script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+        <!-- 标题 -->
+        <title>Leaflet地图调用</title>        
+    </head>
+    <body>
+        <!-- 引入写好的导航栏 -->
+        <div id="mapCanvas">
+            <div id="map" style="width: 100%;height: 40vw;"></div>
+        </div>
+        <!-- JavaScript -->
+        <script>
+            //智图地图内容
+            var normalm1 = L.tileLayer.chinaProvider('Geoq.Normal.Map', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm3 = L.tileLayer.chinaProvider('Geoq.Normal.PurplishBlue', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm4 = L.tileLayer.chinaProvider('Geoq.Normal.Gray', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            var normalm5 = L.tileLayer.chinaProvider('Geoq.Normal.Warm', {
+                maxZoom: 18,
+                minZoom: 5
+            });
+            //天地图内容
+            var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+                    maxZoom: 18,
+                    minZoom: 5
+                }),
+                normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+                    maxZoom: 18,
+                    minZoom: 5
+                }),
+                imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+                    maxZoom: 18,
+                    minZoom: 5
+                }),
+                imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+                    maxZoom: 26,
+                    minZoom: 3
+                });
+        
+            var normal = L.layerGroup([normalm, normala]),
+                image = L.layerGroup([imgm, imga]);
+            //谷歌
+            var normalMap = L.tileLayer.chinaProvider('Google.Normal.Map', {
+                    maxZoom: 26,
+                    minZoom: 3
+                }),
+                satelliteMap = L.tileLayer.chinaProvider('Google.Satellite.Map', {
+                    maxZoom: 26,
+                    minZoom: 3
+                });
+            //高德地图
+            var Gaode = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
+                maxZoom: 26,
+                minZoom: 3
+            });
+            var Gaodimgem = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {
+                maxZoom: 26,
+                minZoom: 3
+            });
+            var Gaodimga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {
+                maxZoom: 26,
+                minZoom: 3
+            });
+            var Gaodimage = L.layerGroup([Gaodimgem, Gaodimga]);
+            //把图层们揉到一起    
+            var baseLayers = {
+                "智图地图": normalm1,
+                "智图午夜蓝": normalm3,
+                "智图灰色": normalm4,
+                "智图暖色": normalm5,
+                "天地图街道": normal,
+                "天地图影像": image,
+                "谷歌地图": normalMap,
+                "谷歌影像": satelliteMap,
+                "高德地图": Gaode,
+                "高德影像": Gaodimage,
+            }
+            // 创建新的地图
+            var map = L.map("map", {
+                center: [26.03, 119.20],
+                zoom: 15,
+                layers: [normal],
+                zoomControl: false
+            });
+            // 缩放按钮
+            L.control.zoom({
+                zoomInTitle: '放大',
+                zoomOutTitle: '缩小'
+            }).addTo(map);
+            
+            var geojsonlayer = new L.GeoJSON.AJAX('/static/json/fjnu_1.geojson', {
+				style: styleFunction1,
+				//针对每个要素，在加载时绑定一个弹出框
+				onEachFeature: function(feature, layer) {
+					layer.bindPopup('<div style="background-color: aliceblue;margin-top: 10px;border-radius: 10px;">' +
+					'<div class="p1" style="padding-top: 5px;"><a>' + feature.properties.Name + '</a></div><div class="p2" style="padding: 5px 10px 5px 10px;width: auto;">' +
+					'<span class="p">类型：' + feature.properties.Type + '</span><br>' +
+					'<span class="p">周长：' + feature.properties.Shape_Leng.toFixed(2) + '米</span><br>' +
+					'<span class="p">面积：' + feature.properties.Shape_Area.toFixed(2) + '平方米</span><br>' +
+					'<span class="p">居住人数：' + feature.properties.peoplelive + '</span><br>' +
+					'<span class="p">高度：' + feature.properties.Height + '</span></div></div>');				
+					
+				}
+			});
 
-		<!-- 从ESRI载入esi-leaflet -->
-		<script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
-		<script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
-		<style>
-			body {
+			function styleFunction1(feature) {
+			switch (feature.properties.Type) {
+				case '主干道':
+					return {
+						fillColor: "RGB(97,153,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '体育设施':
+					return {
+						fillColor: "RGB(146,186,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '公共服务设施':
+					return {
+						fillColor: "RGB(255,255,115)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '公路':
+					return {
+						fillColor: "RGB(197,219,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '办公楼':
+					return {
+						fillColor: "RGB(255,217,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '宿舍楼':
+					return {
+						fillColor: "RGB(255,174,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '教学设施':
+					return {
+						fillColor: "RGB(255,132,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '未建设用地':
+					return {
+						fillColor: "RGB(115,115,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '次级道路及广场':
+					return {
+						fillColor: "RGB(255,255,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '水体':
+					return {
+						fillColor: "RGB(115,178,255)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+				case '草地':
+					return {
+						fillColor: "RGB(76,230,0)",
+						fillOpacity: 1,
+						color: "black",
+						weight: 1,
+						stroke: true
+					};
+					break;
+			}
+		}
+            var drawnItems = new L.FeatureGroup(); 
+
+            geojsonlayer.addTo(map);
+
+            L.control.layers(baseLayers, mylayers).addTo(map);
+            
+            L.control.scale().addTo(map);
+            
+
+        </script>
+    </body>
+    <footer>
+    </footer>
+    <style>
+		body {
 				margin: 0;
 				padding: 0;
 			}
-			
-			#map {
+            #map {
 				position: absolute;
 				top: 0;
 				bottom: 0;
 				right: 0;
 				left: 0;
 			}
-			
-			#selectedFeatures {
-				position: absolute;
-				top: 10px;
-				right: 10px;
-				z-index: 1000;
-				background: white;
-				padding: 1em;
-			}
-			
-			.leaflet-bar.map-text a {
-				color: #79BD8F;
-				display: inline;
-			}
-		</style>
-	</head>
-
-	<body>
-
-		<div id="mapCanvas">
-            <div id="map" style="width: 100%;height: 40vw;"></div>
-        </div>
-		<div id="selectedFeatures" class="leaflet-bar map-text">点击地图
-		</div>
-		<script>
-			//设置天地图的电子地图数据的来源。
-			var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
-				maxZoom: 18,
-				minZoom: 5
-			});
-			var normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
-				maxZoom: 18,
-				minZoom: 5
-			});
-			var imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
-				maxZoom: 18,
-				minZoom: 5
-			});
-			var imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
-				maxZoom: 18,
-				minZoom: 5
-			});
-			//创建天地图电子地图的图层组，将电子地图与注记图层组合，形成电子地图图层组
-			var normal = L.layerGroup([normalm, normala]);
-			var map = L.map('map', {
-				center: [26.0310, 119.2075],
-				zoom: 15,
-				layers: [normal]
-			});
-			
-			//加载ArcgisServer提供的动态地图服务
-			var fjnuLayer = L.esri.dynamicMapLayer({
-				// url: 'http://DESKTOP-CQJLBP8:6080/arcgis/rest/services/fjnu2/MapServer',								
-				url:'http://39.108.186.80:6080/arcgis/rest/services/fjnu/MapServer',
-				opacity: 0.5
-			}).addTo(map);
-			
-			var identifiedFeature;
-			var pane = document.getElementById('selectedFeatures');
-			
-			map.on('click', function(e) {
-				pane.innerHTML = '载入中';
-				if (identifiedFeature) {
-					map.removeLayer(identifiedFeature);
-				}
-				//处理identify功能
-				fjnuLayer.identify().on(map).at(e.latlng).run(function(error, featureCollection) {
-					//检测是否有返回要素。
-					if (featureCollection.features.length > 0) {
-						//将返回的要素集合中的第一个要素转为geojson数据，并加到地图中。
-						identifiedFeature = L.geoJson(featureCollection.features[0]).addTo(map);
-						
-						//提取要素中的属性信息。
-						var buildname = featureCollection.features[0].properties.Name;
-						var type = featureCollection.features[0].properties.Type;
-						pane.innerHTML = "名称: " + buildname + "<br/>" + "类型: " + type + "<br/>";
-					} else {
-						pane.innerHTML = '没找到地物';
-					}
-				});
-			});
-		</script>
-
-	</body>
-
+	</style>
 </html>

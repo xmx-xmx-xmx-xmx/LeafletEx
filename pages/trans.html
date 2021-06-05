@@ -13,15 +13,12 @@
 </head>
 
 <body>
-    <!-- <h1 style="text-align: center;margin-bottom: 20px;">百度坐标、火星坐标、WGS84坐标转换</h2> -->
-            <table style="margin-bottom: 5px;" class="table table-hover";border="1px solid gray">
-                <thead>
+            <table style="margin-bottom: 5px;" class="table table-hover";border="1px solid gray" width="400">
+                <tbody>
                     <tr style="text-align: center;">
-                        <th><img src="../static/images/pin-fill.svg" alt="Bootstrap" width="24" height="24">原坐标系</th>
+                        <th><img src="../static/images/pin-fill.svg" alt="Bootstrap" width="24" height="24"s>原坐标系</th>
                         <th><img src="../static/images/pin-map-fill.svg" alt="Bootstrap" width="24" height="24">原坐标</th>
                     </tr>
-                </thead>
-                <tbody>
                     <tr>
                         <td>
                             <select class="form-select" id="select-input">
@@ -35,14 +32,10 @@
                                 class='form-control' value="" placeholder="请输入纬度" style="width: 150px;" />
                         </td>
                     </tr>
-                </tbody>
-                <thead>
                     <tr style="text-align: center;">
                         <th><img src="../static/images/pin-fill.svg" alt="Bootstrap" width="24" height="24">目标坐标系</th>
                         <th><img src="../static/images/pin-map-fill.svg" alt="Bootstrap" width="24" height="24">转换坐标</th>
                     </tr>
-                </thead>
-                <tbody>
                     <tr>
                         <td>
                             <select class="form-select" id="select-output">
@@ -56,27 +49,26 @@
                             <input id="output2" class="form-control" placeholder="转换纬度" style="width: 150px;margin-right: 3%;float: left;"/>
                         </td>
                     </tr>
-                </tbody>
-                <thead>
-                    <tr style="text-align: center;">
-                        <th><img src="../static/images/hammer.svg" alt="Bootstrap" width="24" height="24">操作</th>
-                    </tr>   
-                </thead>
-                <tbody>
                     <tr>
                         <td>
-                            <a class="btn btn-danger add" onclick="transform()">转换</a>
+                            <a class="btn btn-danger add" onclick="click();transform();">转换</a>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div id="txt1" style="float: left;margin-right: 30px;"></div>
-            <div id="txt2"  style="float: left;"></div>
+            <!-- <div id="txt1" style="float: left;margin-right: 30px;"></div> -->
+            <!-- <div id="txt2"  style="float: left;"></div> -->
 </body>
 <script>
+    function click(){
+        alert("转换成功");
+    }
     function transform() {
-        inputlon = document.getElementById("input-lon").value
-        inputlat = document.getElementById("input-lat").value
+        var inputlon = document.getElementById("input-lon").value
+        var inputlat = document.getElementById("input-lat").value
+        if(document.getElementById("input-lon").value == null || document.getElementById("input-lat").value == null){
+            alert("没写坐标！");
+        }
         var obj1 = document.getElementById("select-input"); //定位id
         var index1 = obj1.selectedIndex; // 选中索引
         var selectinput = obj1.options[index1].value; // 选中值
