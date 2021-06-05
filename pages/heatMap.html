@@ -6,17 +6,15 @@
         <!-- 引用一些js -->
         <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.2.0.js"></script>
         <link rel="shortcut icon" href="../static/images/favicon.ico"> <!-- 设置icon -->
-        <link href="../static/css/leaflet.css"type="text/css" rel="stylesheet"/>
+        <link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../static/css/leaflet.draw.css" /> 
-        <script src="../static/js/leaflet.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
         <script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
-        <script src="../static/js/leaflet.ajax.js"></script>
-        <script src="../static/js/jquery-1.12.0.min.js"></script>
-        <script src="../static/js/leaflet.draw.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="../static/js/leaflet-heat.js"></script>
-        <script src="../static/js/stubuildpoint.js"></script>
-        <script src="../static/js/leaflet.markercluster.js"></script>
-        <script src="stubuildpoint.js"></script>
+        <!-- <script src="../static/js/stubuildpoint.js"></script> -->
+        <!-- <script src="../static/js/leaflet.markercluster.js"></script> -->
         <!-- 标题 -->
         <title>Leaflet热力图、聚类图</title>        
     </head>
@@ -51,8 +49,8 @@
 				"影像": image
 			}
 			var map = L.map('map', {
-				center: [26.0310, 119.2075],
-				zoom: 15,
+				center: [26.0702433671, 119.306965507],
+				zoom: 12,
 				layers: [normal]
 			});
 			L.control.layers(baseLayers).addTo(map);
@@ -66,17 +64,17 @@
 			
 			//定义用于点显示的样式
 			var pointStyle = {
-				radius: 3,
+				radius: 1,
 				fillColor: "#000000",
 				color: "#000000",
 				weight: 1,
 				fillOpacity: 1
 			};
 			//加载用于热力图显示的数据图层
-			var stubuildinglayer = new L.GeoJSON.AJAX('stubuild.geojson', {
+			var stubuildinglayer = new L.GeoJSON.AJAX('/static/json/cheshuo.geojson', {
 				onEachFeature: function(feature, layer) {
 								
-					layer.bindPopup(feature.properties.Name);
+					layer.bindPopup(feature.properties.地址);
 					var tempPoint = [feature.geometry.coordinates[1],
 						feature.geometry.coordinates[0]						
 					];	
@@ -89,17 +87,6 @@
 					return L.circleMarker(latlng, pointStyle);
 				}
 			}).addTo(map);
-			
-			//标记聚类
-			var markers = L.markerClusterGroup();
-			for (var i = 0; i < stubuildpoint.length; i++) {
-				var pointtemp = stubuildpoint[i];
-				var sname=pointtemp[2];
-				var marker = L.marker([pointtemp[0], pointtemp[1]]);
-				marker.bindPopup(sname);
-				markers.addLayer(marker);
-			}
-			map.addLayer(markers);
 		</script>
 	</body>
     <footer>

@@ -5,7 +5,7 @@
     <meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/gcoord/dist/gcoord.js"></script> <!-- 转换js -->
@@ -51,7 +51,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <a class="btn btn-danger add" onclick="click();transform();">转换</a>
+                            <a class="btn btn-danger add" onclick="transform();">转换</a>
                         </td>
                     </tr>
                 </tbody>
@@ -64,90 +64,90 @@
         alert("转换成功");
     }
     function transform() {
-        var inputlon = document.getElementById("input-lon").value
-        var inputlat = document.getElementById("input-lat").value
-        if(document.getElementById("input-lon").value == null || document.getElementById("input-lat").value == null){
-            alert("没写坐标！");
+        if(document.getElementById("input-lon").value == '' || document.getElementById("input-lat").value == ''){
+            alert("没写坐标，转换个der！");
         }
-        var obj1 = document.getElementById("select-input"); //定位id
-        var index1 = obj1.selectedIndex; // 选中索引
-        var selectinput = obj1.options[index1].value; // 选中值
-        var obj2 = document.getElementById("select-output"); //定位id
-        var index2 = obj2.selectedIndex; // 选中索引
-        var selectoutput = obj2.options[index2].value; // 选中值
-
-        if (selectinput == "1" && selectoutput == "1") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09);
-            console.log("BD09坐标转BD09坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "1" && selectoutput == "2") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02);
-            console.log("BD09坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "1" && selectoutput == "3") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84);
-            console.log("BD09坐标转WGS84，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "2" && selectoutput == "1") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09);
-            console.log("GCJ02坐标转BD09坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "2" && selectoutput == "2") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.GCJ02);
-            console.log("GCJ02坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.GCJ02)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.GCJ02)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-
-        if (selectinput == "2" && selectoutput == "3") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.WGS84);
-            console.log("GCJ02坐标转WGS84坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.WGS84)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.WGS84)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "3" && selectoutput == "1") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.BD09);
-            console.log("WGS84坐标转BD09坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.BD09)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.BD09)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "3" && selectoutput == "2") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.GCJ02);
-            console.log("WGS84坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.GCJ02)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.GCJ02)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
-        }
-        if (selectinput == "3" && selectoutput == "3") {
-            var result = gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.WGS84);
-            console.log("WGS84坐标转WGS84坐标，" + result[0] +  "  " + result[1])
-            var outputlong=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.WGS84)[0]
-            var outputlat=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.WGS84)[1]
-            document.getElementById("output1").value = outputlong
-            document.getElementById("output2").value = outputlat
+        else{
+            var inputlon = document.getElementById("input-lon").value
+            var inputlat = document.getElementById("input-lat").value
+            var obj1 = document.getElementById("select-input"); //定位id
+            var index1 = obj1.selectedIndex; // 选中索引
+            var selectinput = obj1.options[index1].value; // 选中值
+            var obj2 = document.getElementById("select-output"); //定位id
+            var index2 = obj2.selectedIndex; // 选中索引
+            var selectoutput = obj2.options[index2].value; // 选中值
+            if (selectinput == "1" && selectoutput == "1") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09);
+                console.log("BD09坐标转BD09坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.BD09)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "1" && selectoutput == "2") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02);
+                console.log("BD09坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.GCJ02)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "1" && selectoutput == "3") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84);
+                console.log("BD09坐标转WGS84，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.BD09, gcoord.WGS84)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "2" && selectoutput == "1") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09);
+                console.log("GCJ02坐标转BD09坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.BD09)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "2" && selectoutput == "2") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.GCJ02);
+                console.log("GCJ02坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.GCJ02)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.GCJ02)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "2" && selectoutput == "3") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.WGS84);
+                console.log("GCJ02坐标转WGS84坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.WGS84)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.GCJ02, gcoord.WGS84)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "3" && selectoutput == "1") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.BD09);
+                console.log("WGS84坐标转BD09坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.BD09)[0]
+                    var outputlat=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.BD09)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "3" && selectoutput == "2") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.GCJ02);
+                console.log("WGS84坐标转GCJ02坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.GCJ02)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.GCJ02)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
+            if (selectinput == "3" && selectoutput == "3") {
+                var result = gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.WGS84);
+                console.log("WGS84坐标转WGS84坐标，" + result[0] +  "  " + result[1])
+                var outputlong=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.WGS84)[0]
+                var outputlat=gcoord.transform([inputlon, inputlat], gcoord.WGS84, gcoord.WGS84)[1]
+                document.getElementById("output1").value = outputlong
+                document.getElementById("output2").value = outputlat
+            }
         }
     }
 </script>
