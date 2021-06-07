@@ -18,8 +18,14 @@
         <title>Leaflet地图调用</title>        
     </head>
     <body>
-        <!-- 引入写好的导航栏 -->
         <div id="mapCanvas">
+            <div class="position">
+                指针经度：<span id="mouse_lng">NaN</span>°
+                指针纬度：<span id="mouse_lat">NaN</span>°
+                中心经度：<span id="center_lng">NaN</span>°
+                中心纬度：<span id="center_lat">NaN</span>°
+                当前缩放等级：<span id="level">NaN</span>级
+            </div>
             <div id="map" style="width: 100%;height: 40vw;"></div>
         </div>
         <!-- JavaScript -->
@@ -55,7 +61,27 @@ var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
         layers: [normal],
         zoomControl: false
     });
+    map.on('mousemove', function (e) {
+			document.getElementById("mouse_lng").innerHTML = e.latlng.lng.toFixed(5)
+			document.getElementById("mouse_lat").innerHTML = e.latlng.lat.toFixed(5)
+	})
 
+	map.on('move', function (e) {
+		/* console.log(e.target) */
+		document.getElementById("center_lng").innerHTML = map.getCenter().lng.toFixed(5)
+		document.getElementById("center_lat").innerHTML = map.getCenter().lat.toFixed(5)
+	})
+    map.on('zoomend ', function (e) {
+    let zoom = map.getZoom();
+    document.getElementById("level").innerHTML = map.getZoom()
+    // if (zoom > 10) {
+    //     map.addLayer(LineLayer);
+    // }
+    // else if (zoom <= 10) {
+    //     map.removeLayer(LineLayer);               
+    // }
+}); 
+    
     L.control.zoom({
         zoomInTitle: '放大',
         zoomOutTitle: '缩小'
@@ -88,6 +114,7 @@ var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
         </script>
     </body>
     <footer>
+        
     </footer>
     <style>
 		body {
@@ -101,5 +128,6 @@ var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
 				right: 0;
 				left: 0;
 			}
+
 	</style>
 </html>

@@ -19,6 +19,13 @@
     <body>
         <!-- 引入写好的导航栏 -->
         <div id="mapCanvas">
+			<div class="position">
+                指针经度：<span id="mouse_lng">NaN</span>°
+                指针纬度：<span id="mouse_lat">NaN</span>°
+                中心经度：<span id="center_lng">NaN</span>°
+                中心纬度：<span id="center_lat">NaN</span>°
+                当前缩放等级：<span id="level">NaN</span>级
+            </div>
             <div id="map" style="width: 100%;height: 40vw;"></div>
         </div>
         <!-- JavaScript -->
@@ -103,6 +110,26 @@
                 layers: [normal],
                 zoomControl: false
             });
+			map.on('mousemove', function (e) {
+			document.getElementById("mouse_lng").innerHTML = e.latlng.lng.toFixed(5)
+			document.getElementById("mouse_lat").innerHTML = e.latlng.lat.toFixed(5)
+	})
+
+	map.on('move', function (e) {
+		/* console.log(e.target) */
+		document.getElementById("center_lng").innerHTML = map.getCenter().lng.toFixed(5)
+		document.getElementById("center_lat").innerHTML = map.getCenter().lat.toFixed(5)
+	})
+    map.on('zoomend ', function (e) {
+    let zoom = map.getZoom();
+    document.getElementById("level").innerHTML = map.getZoom()
+    // if (zoom > 10) {
+    //     map.addLayer(LineLayer);
+    // }
+    // else if (zoom <= 10) {
+    //     map.removeLayer(LineLayer);               
+    // }
+}); 
             // 缩放按钮
             L.control.zoom({
                 zoomInTitle: '放大',
@@ -114,7 +141,7 @@
 				//针对每个要素，在加载时绑定一个弹出框
 				onEachFeature: function(feature, layer) {
 					layer.bindPopup('<div style="background-color: aliceblue;margin-top: 10px;border-radius: 10px;">' +
-					'<div class="p1" style="padding-top: 5px;"><a>' + feature.properties.Name + '</a></div><div class="p2" style="padding: 5px 10px 5px 10px;width: auto;">' +
+					'<div class="p1" style="padding-top: 5px;font-size:16px; text-align:center;"><a>' + feature.properties.Name + '</a></div><div class="p2" style="padding: 5px 10px 5px 10px;width: auto;">' +
 					'<span class="p">类型：' + feature.properties.Type + '</span><br>' +
 					'<span class="p">周长：' + feature.properties.Shape_Leng.toFixed(2) + '米</span><br>' +
 					'<span class="p">面积：' + feature.properties.Shape_Area.toFixed(2) + '平方米</span><br>' +
@@ -231,7 +258,7 @@
 
             geojsonlayer.addTo(map);
 
-            L.control.layers(baseLayers, mylayers).addTo(map);
+            L.control.layers(baseLayers, null).addTo(map);
             
             L.control.scale().addTo(map);
             

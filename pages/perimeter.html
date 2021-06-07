@@ -44,6 +44,13 @@
 
 	<body>
 		<div id="map"></div>
+		<div class="position">
+			指针经度：<span id="mouse_lng">NaN</span>°
+			指针纬度：<span id="mouse_lat">NaN</span>°
+			中心经度：<span id="center_lng">NaN</span>°
+			中心纬度：<span id="center_lat">NaN</span>°
+			当前缩放等级：<span id="level">NaN</span>级
+		</div>
 		<div id="query" class="leaflet-bar map-text">
 			<input type="radio" name="typeRadios" value="050301" onclick="handleTypeChange()">我要吃肯德基</input>
 
@@ -69,8 +76,6 @@
 				zoom: 15,
 				layers: gaodenormal
 			});
-
-
 			var geojsonLayer;
 			var geoList;
 			//用于放置选中标记的图层
@@ -132,7 +137,7 @@
 						var lat = feature.geometry.coordinates[1];
 						var lng = feature.geometry.coordinates[0];
 						// 设置点击后显示的弹出框内容。
-						var popupContent = "<b>" + feature.properties.NAME + "</b>";
+						var popupContent = '<b style="font-size:16px;">' + feature.properties.NAME + '</b><br>'+feature.properties.ADDRESS;
 						var popup = L.popup()
 							.setContent(popupContent);
 						var marker = L.marker([lat, lng], {

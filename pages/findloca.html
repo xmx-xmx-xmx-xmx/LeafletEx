@@ -66,7 +66,6 @@
 				zoom: 15,
 				layers: gaodenormal
 			});
-
 			var geojsonLayer;
 			var geoList;
 			// 用于存放查询结果的图层变量。
@@ -105,7 +104,8 @@
 						"type": 'Feature',
 						"properties": {
 							"NAME": poi.name,
-							"ADDRESS": poi.address
+							"ADDRESS": poi.address,
+							"PHOTO": poi.photos[0]?.url
 						},
 						"geometry": {
 							"type": 'Point',
@@ -145,12 +145,18 @@
 						var lat = feature.geometry.coordinates[1];
 						var lng = feature.geometry.coordinates[0];
 						// 设置点击后显示的弹出框内容。
-						var popupContent = "<b>" + feature.properties.NAME + "</b>";
+						if(feature.properties.PHOTO == null){
+							var popupContent = '<b style="font-size:16px;">' + feature.properties.NAME + '</b><br>'+feature.properties.ADDRESS;
+						}
+						else{
+							var popupContent = '<b style="font-size:16px;">' + feature.properties.NAME + '</b><br><div>地址：</div>'+feature.properties.ADDRESS+'<br><img src="'+feature.properties.PHOTO+'" style="width:140px;"></img>';
+						}
+						
 						var popup = L.popup()
 							.setContent(popupContent);
 						var marker = L.marker([lat, lng], {
 							icon: L.icon({
-								iconUrl: 'img/location.png',
+								iconUrl: '../static/images/location.png',
 								iconAnchor: [8, 32]
 							})
 						}).addTo(map);
