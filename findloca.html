@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <html>
+
 	<head>
-		<meta charset=utf-8 />
-		<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
 		<link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
-		<link rel="stylesheet" href="MarkerCluster.Default.css" />
 		<link rel="stylesheet" href="leaflet-geojson-selector.css" />
+		<!-- 调用jquery -->
 		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-		<script src="../static/js/leaflet.ChineseTmsProviders.js"></script>
+		<script src="static/js/leaflet.ChineseTmsProviders.js"></script>
 		<script src="https://cdn.bootcdn.net/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.js"></script>
+		<!-- 用于列出查询结果的插件 -->
 		<script src="leaflet-geojson-selector.js"></script>
 
 		<style>
@@ -18,15 +18,18 @@
 			body,
 			#map {
 				height: 100%;
-			}			
+			}
+			
 			body {
 				padding: 0;
 				margin: 0;
-			}			
+			}
+			
 			.leaflet-bar.map-text a {
 				color: #79BD8F;
 				display: inline;
-			}			
+			}
+			
 			#query {
 				position: absolute;
 				top: 10px;
@@ -34,34 +37,21 @@
 				z-index: 1000;
 				background: white;
 				padding: 1em;
-			}			
+			}
+			
 			#queryResult {
 				display: none;
-			}
+			}			
+			
 		</style>
-		<title>高德地图周边查询</title>
+		<title>高德地图搜索功能调用</title>
 	</head>
 
 	<body>
 		<div id="map"></div>
-		<div class="position">
-			指针经度：<span id="mouse_lng">NaN</span>°
-			指针纬度：<span id="mouse_lat">NaN</span>°
-			中心经度：<span id="center_lng">NaN</span>°
-			中心纬度：<span id="center_lat">NaN</span>°
-			当前缩放等级：<span id="level">NaN</span>级
-		</div>
 		<div id="query" class="leaflet-bar map-text">
-			<input type="radio" name="typeRadios" value="050301" onclick="handleTypeChange()">我要吃肯德基</input>
-
-			<input type="radio" name="typeRadios" value="050302" onclick="handleTypeChange()">我要白嫖麦当劳</input>
-			<br>
-			<input type="radio" name="typeRadios" value="060100" onclick="handleTypeChange()">我要剁手</input>
-			<input type="radio" name="typeRadios" value="160000" onclick="handleTypeChange()">我要抢银行</input>
-
-		</div>
-		<div id="queryResult" class="queryResult">
-			
+			<input id="keyWord" type="text">
+			<input id="querybutton" type="button" value="查询" onclick="queryGD();" />
 		</div>
 
 		<script type="text/javascript">
@@ -78,10 +68,27 @@
 			});
 			var geojsonLayer;
 			var geoList;
-			//用于放置选中标记的图层
+			// 用于存放查询结果的图层变量。
 			var markers = new L.FeatureGroup();
 			map.addLayer(markers);
 
+			function queryGD() {
+				// 向高德地图进行关键字查询功能
+				var keyword = document.getElementById('keyWord').value;
+				// 查询的链接URL信息范例：
+				// queryurl ='https://restapi.amap.com/v3/place/text?keywords=福建师范大学&city=fuzhou&output=json&offset=20&page=1&key=027aa69e36665c99c6b188471dec3853&extensions=all'
+				// 将查询关键字加上其它参数，生成查询URL
+				var queryurl = processURL(keyword);
+				// 利用jquery的ajax来进行查询。
+				$.ajax({
+					url: queryurl,
+					async: true,
+					success: function(result) {
+						queryCallback(result)
+
+					}
+				});
+			}
 			//处理查询成功后回调的代码
 			queryCallback = function(data) {
 				// 处理由服务器返回的数据				
@@ -97,7 +104,8 @@
 						"type": 'Feature',
 						"properties": {
 							"NAME": poi.name,
-							"ADDRESS": poi.address
+							"ADDRESS": poi.address,
+							"PHOTO": poi.photos[0]?.url
 						},
 						"geometry": {
 							"type": 'Point',
@@ -137,12 +145,18 @@
 						var lat = feature.geometry.coordinates[1];
 						var lng = feature.geometry.coordinates[0];
 						// 设置点击后显示的弹出框内容。
-						var popupContent = '<b style="font-size:16px;">' + feature.properties.NAME + '</b><br>'+feature.properties.ADDRESS;
+						if(feature.properties.PHOTO == null){
+							var popupContent = '<b style="font-size:16px;">' + feature.properties.NAME + '</b><br>'+feature.properties.ADDRESS;
+						}
+						else{
+							var popupContent = '<b style="font-size:16px;">' + feature.properties.NAME + '</b><br><div>地址：</div>'+feature.properties.ADDRESS+'<br><img src="'+feature.properties.PHOTO+'" style="width:140px;"></img>';
+						}
+						
 						var popup = L.popup()
 							.setContent(popupContent);
 						var marker = L.marker([lat, lng], {
 							icon: L.icon({
-								iconUrl: 'img/location.png',
+								iconUrl: 'static/images/location.png',
 								iconAnchor: [8, 32]
 							})
 						}).addTo(map);
@@ -156,30 +170,21 @@
 				}
 
 			};
-
-
 			//处理如何进行高德地图的查询服务，生成查询URL。
-			function processURL(Type) {
-				// 高德地图的周边查询服务，
+			function processURL(Keyword) {
+				// 高德地图的地图查询服务，
 				// 详细参数可参看：https://lbs.amap.com/api/webservice/guide/api/search
-				var url = "https://restapi.amap.com/v3/place/around";
-				var typeCode = Type;
-				// 先获得当前地图中心点
-				var mapCenter = map.getCenter();
-				// 获得中心点的坐标，并转化成字符串，为"经度,纬度"形式
-				var location = mapCenter.lng.toFixed(6).toString() + "," + mapCenter.lat.toFixed(6).toString()
+				var url = "https://restapi.amap.com/v3/place/text?";
+
 				//可以根据需要不断附加参数进去。
-				var newurl = addURLParam(url, "types", Type);
-				newurl = addURLParam(newurl, "location", location);
-				newurl = addURLParam(newurl, "radius", 3000);
+				var newurl = addURLParam(url, "keywords", Keyword);
 				newurl = addURLParam(newurl, "city", "fuzhou");
-				newurl = addURLParam(newurl, "output", "JSON");
+				newurl = addURLParam(newurl, "output", "json");
 				newurl = addURLParam(newurl, "offset", "20");
 				newurl = addURLParam(newurl, "page", "1");
-
 				// 高德地图服务的key,需要自己再在高德地图上申请web服务获得。
 				newurl = addURLParam(newurl, "key", "027aa69e36665c99c6b188471dec3853");
-
+				newurl = addURLParam(newurl, "extensions", "all");
 				return newurl;
 			}
 			//处理使用get提交请求时，URL参数附加到URL的问题。
@@ -190,31 +195,15 @@
 				return url;
 			}
 
-			function handleTypeChange() {
-				// 处理类型选择变化过程。
-				// 先获得类型选择radio对象。
-				var radioObj = document.getElementsByName("typeRadios");
-				for (i = 0; i < radioObj.length; i++) {
-					if (radioObj[i].checked) {
-						// 得到选中的类型的值
-						var type = radioObj[i].value;
-						// 生成用于查询的URL信息。
-						var queryurl = processURL(type);
-						// 利用jquery的ajax来进行查询。
-						$.ajax({
-							url: queryurl,
-							async: true,
-							success: function(result) {
-								queryCallback(result)
-
-							}
-						});
-						break;
-					}
+			function ClearQuery() {
+				if (geojsonLayer) {
+					map.removeLayer(geojsonLayer);
 				}
-			};
-
-			//
+				if (geoList) {
+					map.removeControl(geoList);
+				}
+			}
 		</script>
 	</body>
+
 </html>
