@@ -34,10 +34,13 @@
                     <a class="nav-link active" aria-current="page" onclick="click6()">地点查询</a>
                     </li>
 				<li class="nav-item">
-                    <a class="nav-link active" aria-current="page" onclick="click5()">加载学校地图</a>
+                    <a class="nav-link active" aria-current="page" onclick="click5()">加载GeoJSON</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" onclick="click4()">坐标转换工具</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" onclick="click7()">WMS</a>
                 </li>
                 </ul>
                 </div>
@@ -73,6 +76,10 @@
         function click6() {
 			// alert("click6");
 		document.getElementById('desdiv').innerHTML = "<iframe src='findloca.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
+		}
+        function click7() {
+			// alert("click7");
+		document.getElementById('desdiv').innerHTML = "<iframe src='useWMS.html'"+"style='width: 100%;height: 40vw;'"+"></iframe>";
 		}
     </script>
     <style>

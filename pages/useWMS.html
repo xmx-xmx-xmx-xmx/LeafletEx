@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<html>
+
+	<head>
+        <link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
+        <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+		
+		<style>
+			html,
+			body,
+			#map {
+				height: 100%;
+			}
+			
+			body {
+				padding: 0;
+				margin: 0;
+			}
+		</style>
+		<title>Leaflet地图调用</title>
+	</head>
+
+	<body>
+		<div id="map"></div>
+		<script type="text/javascript">
+			//地图初始化，设置中心位置及显示级别
+			var map = L.map('map', {
+				center: [39.73639298394328, -97.83647842845942],
+				zoom: 5
+			});
+			var wmsLayer = L.tileLayer.wms('http://159.75.26.43:8083/geoserver/USA_Data/wms?', {
+				layers: 'Ex1'
+			}).addTo(map);			
+		</script>
+	</body>
+
+</html>
